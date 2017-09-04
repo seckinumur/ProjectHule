@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "Choice Admin Control Systems V.1.5 / Veritabanı Oluşturma Sistemi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="page-wrapper">
+    <div class="row">
+
+        <div class="col-lg-12">
+            <h1 class="page-header">Veritabanı Oluşturma Sistemi (Alpha)</h1>
+        </div>
+    </div>
+    <div class="form-top-left">
+        <div class="@TempData["UyariTipi"]">@TempData["Sonuc"]</div>
+    </div>
+    <div class="col-lg-12">
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-group col-md-3">
+                <label class="text-primary">Excel Dosyası Seçin</label>
+                <input class="btn btn-default" type="file" name="UploadedFile" />
+            </div>
+            <div class="form-group col-md-4">
+                <p class="text-info">Excel Dosyasını Sisteme Yükle.</p>
+                <input type="submit" data-toggle="modal" data-target="#Uyari" onclick="Basla()" class="btn btn-danger btn-block" name="Submit" value="Yükle" />
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    Alpha Uyarısı!
+                </div>
+
+                <div class="panel-body">
+                    <h3 class="h3">V.0.3 Alpha LimonLAB Online Sipariş Ve Satış Programı Alpha Test. (Sınırlı Erişim Modu)</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="Uyari">
+        <div class="modal-title">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Lütfen Bekleyiniz...   Bu İşlem En Fazla 3 Dakika Sürmelidir!</h3>
+                </div>
+                <div class="modal-body">
+                            <div id="DateCountdown" data-timer="180" style="margin:auto;width:400px;"></div>
+                        <hr />
+                        <h3>Excel Yükleme İşlemi Boyunca İnternet bağlantınızı kesmeyin ve tarayıcıyı kapatmayın!</h3>
+                </div>
+                <div class="modal-footer">
+                    <h3>Bu Pencereyi Kapatmak İçin Boş Alana Tıklayın!</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function Basla() {
+        $("#DateCountdown").TimeCircles({
+            "animation": "smooth",
+            "bg_width": 1.2,
+            "fg_width": 0.1,
+            "circle_bg_color": "#60686F",
+            "time": {
+                "Days": {
+                    "text": "Days",
+                    "color": "#FFCC66",
+                    "show": false
+                },
+                "Hours": {
+                    "text": "Hours",
+                    "color": "#99CCFF",
+                    "show": false
+                },
+                "Minutes": {
+                    "text": "Dakika",
+                    "color": "#d31748",
+                    "show": true
+                },
+                "Seconds": {
+                    "text": "Saniye",
+                    "color": "#b0ef48",
+                    "show": true
+                }
+            }
+        });
+    }
+</script>
+
