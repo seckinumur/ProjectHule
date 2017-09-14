@@ -299,6 +299,9 @@
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\DatabaseSystem.cshtml" />
     <Content Include="Views\Admin\StokIslemleri.cshtml" />
+    <Content Include="Views\Shared\_LayoutPageUser.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\User\Satis.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -309,7 +312,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
-    <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj">

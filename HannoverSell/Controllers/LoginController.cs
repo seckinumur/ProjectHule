@@ -26,12 +26,14 @@ namespace HannoverSell.Controllers
                 {
                     Session["User"] = Kullanici.KullanicilarID;
                     Session["Name"] = Kullanici.KullaniciAdi;
+                    Session["Yetki"] = "User";
                     return RedirectToAction("Index", "User");
                 }
                 else
                 {
                     Session["User"] = Kullanici.KullanicilarID;
                     Session["Name"] = Kullanici.KullaniciAdi;
+                    Session["Yetki"] = "Admin";
                     return RedirectToAction("Index", "Admin");
                 }
             }

@@ -1,6 +1,6 @@
 ﻿@model DAL.VM.VMStok
 @{
-    ViewBag.Title = "StokIslemleri";
+    ViewBag.Title = "Choice Admin Control Systems V.1.5 / Stok işlemleri";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div id="page-wrapper">
@@ -51,11 +51,12 @@
 
                     <div class="form-group col-sm-2">
                         <label>Detaylı Ara</label>
-                        <button class="btn btn-warning col-md-12 form-control" data-toggle="collapse" data-target="#Detay" aria-expanded="false" aria-controls="collapseExample">Detay</button>
+                        <button class="btn btn-warning col-md-12 form-control" data-toggle="collapse" data-target="#Detay" onclick="Arama()" aria-expanded="false" aria-controls="collapseExample">Detay</button>
                     </div>
 
                     <div class="form-group col-sm-2">
                         <label>Ürünü Bul</label>
+                        <input hidden="hidden" value="0" id="DetayKontrol" />
                         <button onclick="BUL()" class="btn btn-success col-md-12 form-control">Bul</button>
                     </div>
 
@@ -170,12 +171,12 @@
             <div class="col-lg-12">
                 <div class="panel panel-success">
                     <div class="panel-body">
-                        <form method="post">
+                        <form method="post" enctype="multipart/form-data">
                             <div class="col-xs-4">
-                                <input class="btn btn-default"  type="file" />
+                                <input class="btn btn-default" type="file" name="Dosya" />
                             </div>
                             <div class="col-xs-6">
-                                <p class="text-warning">Otomatik Stok ve Fiyat Yükleme Sistemi V.0.4 (Beta)</p>
+                                <p class="@ViewBag.Class">@ViewBag.Text</p>
                             </div>
                             <div class="col-xs-2">
                                 <button type="submit" class="btn btn-success btn-block">Yükle</button>
@@ -184,57 +185,56 @@
                     </div>
                 </div>
             </div>
-            </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="Bak" tabindex="-1" role="dialog" aria-labelledby="DuzenleLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-title">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="DuzenleLabel">Ürün Stok</h4>
+<div class="modal fade" id="Bak" tabindex="-1" role="dialog" aria-labelledby="DuzenleLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="DuzenleLabel">Ürün Stok</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group col-md-4">
+                    <label>Marka Adı</label>
+                    <input class="form-control" id="marka1" readonly="readonly">
                 </div>
-                <div class="modal-body">
-                    <div class="form-group col-md-4">
-                        <label>Marka Adı</label>
-                        <input class="form-control" id="marka1" readonly="readonly">
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label>Model Adı</label>
-                        <input class="form-control" id="model1" readonly="readonly">
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label>Sınıf Kodu</label>
-                        <input class="form-control" id="SinifKodu1" readonly="readonly">
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label>Sınıf Tanımı</label>
-                        <input class="form-control" id="SinifTanimi1" readonly="readonly">
-                    </div>
-                    <div class="form-group col-md-2">
-                        <label>Malzeme Kodu</label>
-                        <input class="form-control" id="malzemekodu1" readonly="readonly">
-                    </div>
-                    <div class="form-group col-md-2">
-                        <label>Ürün Fiyatı</label>
-                        <input type="number" class="form-control" id="Fiyat" min="0.00" step="0.05" required>
-                    </div>
-                    <div class="form-group col-md-2">
-                        <label>Stok Adedi</label>
-                        <input type="number" class="form-control" id="Stok" min="0" required>
-                    </div>
-                    <div class="form-group col-md-2">
-                        <label>Güncelle</label>
-                        <button class="btn btn-success form-control" onclick="StokGuncelle()"><i class="fa fa-check"> Kaydet</i></button>
-                    </div>
-                    <div class="form-group">
-                        <iframe class="col-xs-12" frameborder="0" style="height:500px" id="Bura"></iframe>
-                    </div>
+                <div class="form-group col-md-4">
+                    <label>Model Adı</label>
+                    <input class="form-control" id="model1" readonly="readonly">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>
+                <div class="form-group col-md-4">
+                    <label>Sınıf Kodu</label>
+                    <input class="form-control" id="SinifKodu1" readonly="readonly">
                 </div>
+                <div class="form-group col-md-4">
+                    <label>Sınıf Tanımı</label>
+                    <input class="form-control" id="SinifTanimi1" readonly="readonly">
+                </div>
+                <div class="form-group col-md-2">
+                    <label>Malzeme Kodu</label>
+                    <input class="form-control" id="malzemekodu1" readonly="readonly">
+                </div>
+                <div class="form-group col-md-2">
+                    <label>Ürün Fiyatı</label>
+                    <input type="number" class="form-control" id="Fiyat" min="0.00" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label>Stok Adedi</label>
+                    <input type="number" class="form-control" id="Stok" min="0" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label>Güncelle</label>
+                    <button class="btn btn-success form-control" onclick="StokGuncelle()"><i class="fa fa-check"> Kaydet</i></button>
+                </div>
+                <div class="form-group">
+                    <iframe class="col-xs-12" frameborder="0" style="height:500px" id="Bura"></iframe>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>
             </div>
         </div>
     </div>
@@ -243,19 +243,56 @@
 
 
 <script type="text/javascript">
+    function Arama() {
+        var anahtar = document.getElementById("DetayKontrol").value;
+        if (anahtar == 0) {
+            document.getElementById("DetayKontrol").value = 1;
+        }
+        else {
+            document.getElementById("DetayKontrol").value = 0;
+        }
+    };
     function BUL() {
 
         var Marka = $('#marka').selectpicker('val');
         var Model = $('#model').selectpicker('val');
         var SinifKodu = $('#SK').selectpicker().find("option:selected").text();
         var SinifTanimi = $('#ST').selectpicker().find("option:selected").text();
+        var detay = document.getElementById("DetayKontrol").value;
 
-        var Veri = JSON.stringify({
-            'Marka': Marka,
-            'Model': Model,
-            'SinifKodu': SinifKodu,
-            'SinifTanimi': SinifTanimi
-        });
+        if (detay == 0) {
+            var Veri = JSON.stringify({
+                'Marka': Marka,
+                'Model': Model,
+                'SinifKodu': SinifKodu,
+                'SinifTanimi': SinifTanimi,
+                'Detay': detay
+            });
+        }
+        else {
+            var Veri = JSON.stringify({
+                'Marka': Marka,
+                'Model': Model,
+                'SinifKodu': SinifKodu,
+                'SinifTanimi': SinifTanimi,
+                'Detay': detay,
+                'Section1': $('#S1').selectpicker().find("option:selected").text(),
+                'Section2': $('#S2').selectpicker().find("option:selected").text(),
+                'Section3': $('#S3').selectpicker().find("option:selected").text(),
+                'Section4': $('#S4').selectpicker().find("option:selected").text(),
+                'Section5': $('#S5').selectpicker().find("option:selected").text(),
+                'Section6': $('#S6').selectpicker().find("option:selected").text(),
+                'Section7': $('#S7').selectpicker().find("option:selected").text(),
+                'Section8': $('#S8').selectpicker().find("option:selected").text(),
+                'Section9': $('#S9').selectpicker().find("option:selected").text(),
+                'Section10': $('#S10').selectpicker().find("option:selected").text(),
+                'Section11': $('#S11').selectpicker().find("option:selected").text(),
+                'Section12': $('#S12').selectpicker().find("option:selected").text(),
+                'Section13': $('#S13').selectpicker().find("option:selected").text(),
+                'Section14': $('#S14').selectpicker().find("option:selected").text(),
+                'Section15': $('#S15').selectpicker().find("option:selected").text()
+            });
+        };
 
         $.ajax({
             type: 'POST',
@@ -297,8 +334,7 @@
             },
         });
     };
-    function StokGuncelle()
-    {
+    function StokGuncelle() {
 
         var adet = JSON.stringify({
             'Stok': document.getElementById("Stok").value,
@@ -337,7 +373,7 @@
                                 align: 'center'
                             },
                             delay: 1500
-                    });
+                        });
                 }
             }
         });

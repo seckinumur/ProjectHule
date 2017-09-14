@@ -11,71 +11,61 @@ namespace DAL.Repo
 {
     public class SepetRepo
     {
-        public static List<VMUrun> SanalSepeteEkle(int kullanici, int urun, int adet) //Sanal sepet
+        public static bool SanalSepeteEkle(int kullanici, string malzemekodu, int adet, double Fiyat) //Sanal sepet
         {
             using (PHDB db = new PHDB())
             {
                 try
                 {
-                    var bul = db.SanalSepet.FirstOrDefault(p => p.KullanicilarID == kullanici && p.UrunID == urun);
-                    bul.Adet += adet;
-                    db.SaveChanges();
-                    return db.SanalSepet.Where(e => e.KullanicilarID == kullanici).Select(p => new VMUrun
+                    var bulUrun = db.Urun.FirstOrDefault(p => p.MalzemeKodu == malzemekodu);
+                    try
                     {
-                        Marka = p.Urun.Marka,
-                        Model = p.Urun.Model,
-                        SinifKodu = p.Urun.SinifKodu,
-                        SinifTanimi = p.Urun.SinifTanimi,
-                        MalzemeKodu = p.Urun.MalzemeKodu,
-                        Section1 = p.Urun.Section1,
-                        Section2 = p.Urun.Section2,
-                        Section3 = p.Urun.Section3,
-                        Section4 = p.Urun.Section4,
-                        Section5 = p.Urun.Section5,
-                        Section6 = p.Urun.Section6,
-                        Section7 = p.Urun.Section7,
-                        Section8 = p.Urun.Section8,
-                        Section9 = p.Urun.Section9,
-                        Section10 = p.Urun.Section10,
-                        Section11 = p.Urun.Section11,
-                        Section12 = p.Urun.Section12,
-                        Section13 = p.Urun.Section13,
-                        Section14 = p.Urun.Section14,
-                        Section15 = p.Urun.Section15
-                    }).ToList();
+                        var bul = db.SanalSepet.FirstOrDefault(p => p.KullanicilarID == kullanici && p.MalzemeKodu == malzemekodu);
+                        bul.Adet += adet;
+                        bul.Fiyat = Fiyat;
+                        db.SaveChanges();
+                        return true;
+                    }
+                    catch
+                    {
+                        db.SanalSepet.Add(new SanalSepet()
+                        {
+                            Adet = adet,
+                            KullanicilarID = kullanici,
+                            MalzemeKodu = malzemekodu,
+                            Fiyat = Fiyat,
+                            Marka = bulUrun.Marka,
+                            Model = bulUrun.Model,
+                            SinifKodu = bulUrun.SinifKodu,
+                            SinifTanimi = bulUrun.SinifTanimi
+                        });
+                        db.SaveChanges();
+                        return true;
+                    }
                 }
                 catch
                 {
-                    db.SanalSepet.Add(new SanalSepet()
-                    {
-                        Adet = adet,
-                        KullanicilarID = kullanici,
-                        UrunID = urun
-                    });
+                    return false;
+                }
+            }
+        }
+        public static bool SanalSepetUrunGuncelle(int kullanici, string malzemekodu, int adet, double Fiyat) //Sanal sepet
+        {
+            using (PHDB db = new PHDB())
+            {
+                var bulUrun = db.Urun.FirstOrDefault(p => p.MalzemeKodu == malzemekodu);
+                try
+                {
+                    var bul = db.SanalSepet.FirstOrDefault(p => p.KullanicilarID == kullanici && p.MalzemeKodu == malzemekodu);
+                    bul.Adet = adet;
+                    bul.Fiyat = Fiyat;
                     db.SaveChanges();
-                    return db.SanalSepet.Where(p => p.KullanicilarID == kullanici).Select(p => new VMUrun
-                    {
-                        Marka = p.Urun.Marka,
-                        Model = p.Urun.Model,
-                        SinifKodu = p.Urun.SinifKodu,
-                        SinifTanimi = p.Urun.SinifTanimi,
-                        MalzemeKodu = p.Urun.MalzemeKodu,
-                        Section1 = p.Urun.Section1,
-                        Section2 = p.Urun.Section2,
-                        Section3 = p.Urun.Section3,
-                        Section4 = p.Urun.Section4,
-                        Section5 = p.Urun.Section5,
-                        Section6 = p.Urun.Section6,
-                        Section7 = p.Urun.Section7,
-                        Section8 = p.Urun.Section8,
-                        Section9 = p.Urun.Section9,
-                        Section10 = p.Urun.Section10,
-                        Section11 = p.Urun.Section11,
-                        Section12 = p.Urun.Section12,
-                        Section13 = p.Urun.Section13,
-                        Section14 = p.Urun.Section14,
-                        Section15 = p.Urun.Section15
-                    }).ToList();
+
+                    return true;
+                }
+                catch
+                {
+                    return false;
                 }
             }
         }
@@ -93,118 +83,60 @@ namespace DAL.Repo
             {
                 return db.SanalSepet.Where(p => p.KullanicilarID == kullanici).Select(p => new VMUrun
                 {
-                    Marka = p.Urun.Marka,
-                    Model = p.Urun.Model,
-                    SinifKodu = p.Urun.SinifKodu,
-                    SinifTanimi = p.Urun.SinifTanimi,
-                    MalzemeKodu = p.Urun.MalzemeKodu,
-                    Section1 = p.Urun.Section1,
-                    Section2 = p.Urun.Section2,
-                    Section3 = p.Urun.Section3,
-                    Section4 = p.Urun.Section4,
-                    Section5 = p.Urun.Section5,
-                    Section6 = p.Urun.Section6,
-                    Section7 = p.Urun.Section7,
-                    Section8 = p.Urun.Section8,
-                    Section9 = p.Urun.Section9,
-                    Section10 = p.Urun.Section10,
-                    Section11 = p.Urun.Section11,
-                    Section12 = p.Urun.Section12,
-                    Section13 = p.Urun.Section13,
-                    Section14 = p.Urun.Section14,
-                    Section15 = p.Urun.Section15
+                    Marka = p.Marka,
+                    Model = p.Model,
+                    SinifKodu = p.SinifKodu,
+                    SinifTanimi = p.SinifTanimi,
+                    MalzemeKodu = p.MalzemeKodu,
+                    Adet = p.Adet,
+                    Fiyat = p.Fiyat
                 }).ToList();
             }
         }
-        public static List<VMUrun> SanalSepeteCikar(int kullanici, int urun, int adet) //Sanal sepet
+        public static bool SanalSepeteCikar(int kullanici, string Malzemekodu) //Sanal sepet
         {
             using (PHDB db = new PHDB())
             {
                 try
                 {
-                    var bul = db.SanalSepet.FirstOrDefault(p => p.KullanicilarID == kullanici && p.UrunID == urun);
-                    if (bul.Adet == 1)
-                    {
-                        db.SanalSepet.Remove(bul);
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        bul.Adet -= adet;
-                        db.SaveChanges();
-                    }
-                    return db.SanalSepet.Where(p => p.KullanicilarID == kullanici).Select(p => new VMUrun
-                    {
-                        Marka = p.Urun.Marka,
-                        Model = p.Urun.Model,
-                        SinifKodu = p.Urun.SinifKodu,
-                        SinifTanimi = p.Urun.SinifTanimi,
-                        MalzemeKodu = p.Urun.MalzemeKodu,
-                        Section1 = p.Urun.Section1,
-                        Section2 = p.Urun.Section2,
-                        Section3 = p.Urun.Section3,
-                        Section4 = p.Urun.Section4,
-                        Section5 = p.Urun.Section5,
-                        Section6 = p.Urun.Section6,
-                        Section7 = p.Urun.Section7,
-                        Section8 = p.Urun.Section8,
-                        Section9 = p.Urun.Section9,
-                        Section10 = p.Urun.Section10,
-                        Section11 = p.Urun.Section11,
-                        Section12 = p.Urun.Section12,
-                        Section13 = p.Urun.Section13,
-                        Section14 = p.Urun.Section14,
-                        Section15 = p.Urun.Section15
-                    }).ToList();
+                    var bul = db.SanalSepet.FirstOrDefault(p => p.KullanicilarID == kullanici && p.MalzemeKodu == Malzemekodu);
+                    db.SanalSepet.Remove(bul);
+                    db.SaveChanges();
+                    return true;
                 }
                 catch
                 {
-                    return db.SanalSepet.Where(p => p.KullanicilarID == kullanici).Select(p => new VMUrun
-                    {
-                        Marka = p.Urun.Marka,
-                        Model = p.Urun.Model,
-                        SinifKodu = p.Urun.SinifKodu,
-                        SinifTanimi = p.Urun.SinifTanimi,
-                        MalzemeKodu = p.Urun.MalzemeKodu,
-                        Section1 = p.Urun.Section1,
-                        Section2 = p.Urun.Section2,
-                        Section3 = p.Urun.Section3,
-                        Section4 = p.Urun.Section4,
-                        Section5 = p.Urun.Section5,
-                        Section6 = p.Urun.Section6,
-                        Section7 = p.Urun.Section7,
-                        Section8 = p.Urun.Section8,
-                        Section9 = p.Urun.Section9,
-                        Section10 = p.Urun.Section10,
-                        Section11 = p.Urun.Section11,
-                        Section12 = p.Urun.Section12,
-                        Section13 = p.Urun.Section13,
-                        Section14 = p.Urun.Section14,
-                        Section15 = p.Urun.Section15
-                    }).ToList();
+                    return false;
                 }
             }
         }
-        public static bool SepetiKaydetKullanici(int KullaniciID, string UyeID) //Kullanıcı Modunda Manuel Sepeti Ekle
+        public static bool SepetiKaydetKullanici(int KullaniciID, int Uye) //Kullanıcı Modunda Manuel Sepeti Ekle
         {
             using (PHDB db = new PHDB())
             {
                 try
                 {
-                    int uyelerid = int.Parse(UyeID);
                     var bul = db.SanalSepet.Where(p => p.KullanicilarID == KullaniciID).ToList();
                     if (bul.Count != 0)
                     {
                         var liste = bul.Select(p => new UrunSepet
                         {
-                            Adedi = p.Adet,
-                            UrunID = p.Urun.UrunID
+                            Adet = p.Adet,
+                            Fiyat = p.Fiyat,
+                            KullanicilarID = p.KullanicilarID,
+                            MalzemeKodu = p.MalzemeKodu,
+                            Marka = p.Marka,
+                            Model = p.Model,
+                            SinifKodu = p.SinifKodu,
+                            SinifTanimi = p.SinifTanimi,
+                            UrunStokID = db.UrunStok.FirstOrDefault(e => e.MalzemeKodu == p.MalzemeKodu).UrunStokID
                         }).ToList();
 
                         db.Sepet.Add(new Sepet()
                         {
                             SiparisTamamlandimi = true,
-                            MusteriID = uyelerid,
+                            MusteriID = Uye,
+                            KullanicilarID = KullaniciID,
                             UrunSepet = liste,
                             Manuel = true,
                             Aktifmi = true

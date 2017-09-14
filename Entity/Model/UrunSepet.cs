@@ -10,11 +10,16 @@ namespace Entity.Model
    public class UrunSepet
     {
         public int UrunSepetID { get; set; }
-        public int UrunID { get; set; }
-        public int Adedi { get; set; }
+        public int KullanicilarID { get; set; }
+        public string Marka { get; set; }
+        public string Model { get; set; }
+        public string SinifKodu { get; set; }
+        public string SinifTanimi { get; set; }
+        public string MalzemeKodu { get; set; }
+        public double Fiyat { get; set; }
+        public int Adet { get; set; }
         public int UrunStokID { get; set; }
 
-        public virtual Urun Urun { get; set; }
         public virtual UrunStok UrunStok { get; set; }
     }
 }

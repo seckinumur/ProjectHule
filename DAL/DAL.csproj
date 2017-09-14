@@ -62,6 +62,7 @@
     <Compile Include="VM\VMAyarlar.cs" />
     <Compile Include="VM\VMGunlukToplam.cs" />
     <Compile Include="VM\VMKullanici.cs" />
+    <Compile Include="VM\VMRAM.cs" />
     <Compile Include="VM\VMSection.cs" />
     <Compile Include="VM\VMSepet.cs" />
     <Compile Include="VM\VMSiparis.cs" />

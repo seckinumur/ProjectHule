@@ -14,7 +14,7 @@ namespace HannoverSell.Controllers
     {
         public ActionResult Index()
         {
-            if (Session["User"] != null)
+            if (Session["User"] != null && Session["Yetki"].ToString()=="Admin")
             {
                 var Gonder = AnalizRepo.Analiz();
                 return View(Gonder);
@@ -42,7 +42,7 @@ namespace HannoverSell.Controllers
         [HttpPost]
         public ActionResult DatabaseSystem(FormCollection formCollection)
         {
-            if (Session["User"] != null)
+            if (Session["User"] != null && Session["Yetki"].ToString() == "Admin")
             {
                 if (Request != null)
                 {
@@ -128,12 +128,14 @@ namespace HannoverSell.Controllers
         }
         public ActionResult StokIslemleri()
         {
-            if (Session["User"] != null)
+            if (Session["User"] != null && Session["Yetki"].ToString() == "Admin")
             {
                 var Gonder = UrunRepo.StokListe();
-                RamData = UrunRepo.SinifKoduGet();
-                RamData2 = UrunRepo.SinifTanimiGet();
-                SecData = UrunRepo.SectionGet();
+                VMRAM.RamData = UrunRepo.SinifKoduGet();
+                VMRAM.RamData2 = UrunRepo.SinifTanimiGet();
+                VMRAM.SecData = UrunRepo.SectionGet();
+                ViewBag.Class = "text-warning";
+                ViewBag.Text = "Otomatik Stok ve Fiyat Yükleme Sistemi V.0.4 (Beta)";
                 return View(Gonder);
             }
             else
@@ -148,7 +150,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(RamData.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.RamData.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -160,7 +162,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 5)
             {
-                return Json(RamData2.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.RamData2.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -176,19 +178,24 @@ namespace HannoverSell.Controllers
             }
             else
             {
-                var gonder = UrunRepo.UrunBul(data);
-                return Json(gonder, JsonRequestBehavior.AllowGet);
+                if (data.Detay != 1)
+                {
+                    var gonder = UrunRepo.UrunBul(data);
+                    return Json(gonder, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var gonder = UrunRepo.UrunBulDetay(data);
+                    return Json(gonder, JsonRequestBehavior.AllowGet);
+                }
             }
         }
-        private static List<string> RamData { get; set; }
-        private static List<string> RamData2 { get; set; }
-        private static VMSection SecData { get; set; }
         [HttpGet]
         public ActionResult Section1(string q) //Ajax
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section1.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section1.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -200,7 +207,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section2.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section2.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -212,7 +219,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section3.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section3.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -224,7 +231,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section4.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section4.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -236,7 +243,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section5.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section5.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -248,7 +255,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section6.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section6.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -260,7 +267,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section7.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section7.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -272,7 +279,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section8.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section8.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -284,7 +291,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section9.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section9.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -296,7 +303,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section10.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section10.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -308,7 +315,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section11.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section11.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -320,7 +327,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section12.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section12.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -332,7 +339,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section13.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section13.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -344,7 +351,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section14.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section14.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -356,7 +363,7 @@ namespace HannoverSell.Controllers
         {
             if (q.Length >= 4)
             {
-                return Json(SecData.Section15.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+                return Json(VMRAM.SecData.Section15.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -367,7 +374,7 @@ namespace HannoverSell.Controllers
         public ActionResult StokEkle(VMStokEkle data) //Ajax
         {
             bool sonuc = UrunRepo.StokEkleAjax(data);
-            if (sonuc !=false)
+            if (sonuc != false)
             {
                 return Json(new { success = true, responseText = "Stok Başarıyla Güncellendi!" }, JsonRequestBehavior.AllowGet);
             }
@@ -375,6 +382,87 @@ namespace HannoverSell.Controllers
             {
                 return Json(new { success = false, responseText = "Stok Güncelleme Başarılı olmadı!" }, JsonRequestBehavior.AllowGet);
             }
+        }
+        [HttpPost]
+        public ActionResult StokIslemleri(HttpPostedFileBase Dosya)
+        {
+            if (Session["User"] != null && Session["Yetki"].ToString() == "Admin")
+            {
+                if ((Dosya != null) && (Dosya.ContentLength > 0) && !string.IsNullOrEmpty(Dosya.FileName))
+                {
+                    try
+                    {
+                        List<VMStokEkle> liste = new List<VMStokEkle>();
+                        using (var package = new ExcelPackage(Dosya.InputStream))
+                        {
+                            var currentSheet = package.Workbook.Worksheets;
+                            var workSheet = currentSheet.First();
+                            int noOfRow = workSheet.Dimension.End.Row;
+                            for (int rowIterator = 2; rowIterator <= noOfRow; rowIterator++)
+                            {
+                                liste.Add(new VMStokEkle
+                                {
+                                    MalzemeKodu = (workSheet.Cells[rowIterator, 5].Value ?? String.Empty).ToString(),
+                                    Stok = int.Parse((workSheet.Cells[rowIterator, 6].Value ?? String.Empty).ToString() == string.Empty ? "0" : (workSheet.Cells[rowIterator, 6].Value ?? String.Empty).ToString()),
+                                    Fiyati = double.Parse((workSheet.Cells[rowIterator, 7].Value ?? String.Empty).ToString() == string.Empty ? "0" : (workSheet.Cells[rowIterator, 7].Value ?? String.Empty).ToString())
+                                });
+                            }
+                        }
+                        bool sonuc = UrunRepo.StokEkleExcel(liste);
+                        if (sonuc != false)
+                        {
+                            var Gonder = UrunRepo.StokListe();
+                            VMRAM.RamData = UrunRepo.SinifKoduGet();
+                            VMRAM.RamData2 = UrunRepo.SinifTanimiGet();
+                            VMRAM.SecData = UrunRepo.SectionGet();
+                            ViewBag.Class = "text-success";
+                            ViewBag.Text = "İşlem Başarılı!";
+                            return View(Gonder);
+                        }
+                        else
+                        {
+                            var Gonder = UrunRepo.StokListe();
+                            VMRAM.RamData = UrunRepo.SinifKoduGet();
+                            VMRAM.RamData2 = UrunRepo.SinifTanimiGet();
+                            VMRAM.SecData = UrunRepo.SectionGet();
+                            ViewBag.Class = "text-warning";
+                            ViewBag.Text = "İşlem Başarısız!";
+                            return View(Gonder);
+                        }
+                    }
+                    catch
+                    {
+                        var Gonder = UrunRepo.StokListe();
+                        VMRAM.RamData = UrunRepo.SinifKoduGet();
+                        VMRAM.RamData2 = UrunRepo.SinifTanimiGet();
+                        VMRAM.SecData = UrunRepo.SectionGet();
+                        ViewBag.Class = "text-warning";
+                        ViewBag.Text = "Dosya Okunamadı!";
+                        return View(Gonder);
+                    }
+                }
+                else
+                {
+                    var Gonder = UrunRepo.StokListe();
+                    VMRAM.RamData = UrunRepo.SinifKoduGet();
+                    VMRAM.RamData2 = UrunRepo.SinifTanimiGet();
+                    VMRAM.SecData = UrunRepo.SectionGet();
+                    ViewBag.Class = "text-warning";
+                    ViewBag.Text = "Geçerli Bir Excel Dosyası Değil!";
+                    return View(Gonder);
+                }
+            }
+            else
+            {
+                TempData["UyariTipi"] = "text-danger";
+                TempData["Sonuc"] = "Tarayıcıda Oturum Süreniz Dolmuş! Lütfen Tekrar Oturum Açın!";
+                return RedirectToAction("Logon", "Login");
+            }
+        }
+        public ActionResult Logoff()
+        {
+            Session.Abandon();
+            return RedirectToAction("Logon", "Login");
         }
     }
 

@@ -29,5 +29,8 @@ namespace DAL.VM
         public string Section13 { get; set; }
         public string Section14 { get; set; }
         public string Section15 { get; set; }
+
+        public double Fiyat { get; set; }
+        public int Adet { get; set; }
     }
 }

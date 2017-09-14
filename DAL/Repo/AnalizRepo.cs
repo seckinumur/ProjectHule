@@ -44,7 +44,25 @@ namespace DAL.Repo
                 return Analiz;
             }
         }
-       
+        public static VMAnaliz AnalizPersonel(int id) //Toplam
+        {
+            using (PHDB db = new PHDB())
+            {
+                int Gonderilenurunler = db.Siparis.Where(p => p.Gonderildimi == true && p.İptal == false && p.KullanicilarID==id).Count();
+                int Gonderilmeyenurunler = db.Siparis.Where(p => p.Gonderildimi == false && p.İptal == false && p.Onaylandimi == true && p.KullanicilarID==id).Count();
+                int IptalEdilen = db.Siparis.Where(p => p.İptal == true && p.Gonderildimi == false && p.KullanicilarID==id).Count();
+                int OnayBekleyenler = db.Siparis.Where(p => p.Onaylandimi == false && p.Gonderildimi == false && p.İptal == false && p.KullanicilarID==id).Count();
+                VMAnaliz Analiz = new VMAnaliz
+                {
+                    Gönderilen = Gonderilenurunler,
+                    OnayBekleyen = OnayBekleyenler,
+                    Gonderilmeyen = Gonderilmeyenurunler,
+                    Iptal = IptalEdilen,
+                };
+                return Analiz;
+            }
+        }
+
         public static List<VMKullanici> KullaniciListele() //Kullanıcı Listele
         {
             using (PHDB db = new PHDB())

@@ -10,6 +10,7 @@ namespace Entity.Model
     {
         public int SepetID { get; set; }
         public int MusteriID { get; set; }
+        public int KullanicilarID { get; set; }
         public bool SiparisTamamlandimi { get; set; }
         public bool Aktifmi { get; set; }
         public bool Manuel { get; set; }

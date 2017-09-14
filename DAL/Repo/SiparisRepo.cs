@@ -20,31 +20,9 @@ namespace DAL.Repo
                     db.Siparis.Add(new Siparis()
                     {
                         Gonderildimi = false,
-                        Onaylandimi = true,
-                        SepetID = Data.SepetID,
-                        SiparisTarihi = DateTime.Now.ToShortDateString(),
-                        İptal = false
-                    });
-                    db.SaveChanges();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-        public static bool SiparisKaydetUye(Sepet Data) //sepet olarak gelen datayı siparişe ekledik
-        {
-            using (PHDB db = new PHDB())
-            {
-                try
-                {
-                    db.Siparis.Add(new Siparis()
-                    {
-                        Gonderildimi = false,
                         Onaylandimi = false,
                         SepetID = Data.SepetID,
+                        KullanicilarID=Data.KullanicilarID,
                         SiparisTarihi = DateTime.Now.ToShortDateString(),
                         İptal = false
                     });
@@ -143,9 +121,12 @@ namespace DAL.Repo
                     Siparis.İptal = false;
                     Siparis.Gonderildimi = true;
                     Siparis.GonderimTarihi = DateTime.Now.ToShortDateString();
+                    Siparis.Ay = ay;
+                    Siparis.Gun = gun;
+                    Siparis.Yil = yil;
                     foreach (var item in Siparis.Sepet.UrunSepet)
                     {
-                        item.UrunStok.Adedi -= item.Adedi;
+                        item.UrunStok.Adedi -= item.Adet;
                         db.SaveChanges();
                     }
                     foreach (var item in Siparis.Sepet.UrunSepet)
@@ -153,14 +134,14 @@ namespace DAL.Repo
                         try
                         {
                             var Bul = db.AylikCiro.FirstOrDefault(p => p.Yil == yil && p.Ay == ay);
-                            Bul.ToplamAdet += item.Adedi;
-                            Bul.ToplamSatis += item.UrunStok.Fiyati * item.Adedi;
+                            Bul.ToplamAdet += item.Adet;
+                            Bul.ToplamSatis += item.UrunStok.Fiyati * item.Adet;
                             db.SaveChanges();
                             try
                             {
                                 var kontrol = db.GunlukCiro.FirstOrDefault(p => p.Yil == yil && p.Ay == ay && p.Gun == gun);
-                                kontrol.ToplamAdet += item.Adedi;
-                                kontrol.ToplamSatis += item.UrunStok.Fiyati * item.Adedi;
+                                kontrol.ToplamAdet += item.Adet;
+                                kontrol.ToplamSatis += item.UrunStok.Fiyati * item.Adet;
                                 db.SaveChanges();
                             }
                             catch
@@ -170,8 +151,8 @@ namespace DAL.Repo
                                     Ay = ay,
                                     Gun = gun,
                                     Yil = yil,
-                                    ToplamAdet = item.Adedi,
-                                    ToplamSatis = item.UrunStok.Fiyati * item.Adedi
+                                    ToplamAdet = item.Adet,
+                                    ToplamSatis = item.UrunStok.Fiyati * item.Adet
                                 });
                                 db.SaveChanges();
                             }
@@ -182,8 +163,8 @@ namespace DAL.Repo
                             {
                                 Ay = ay,
                                 Yil = yil,
-                                ToplamAdet = item.Adedi,
-                                ToplamSatis = item.UrunStok.Fiyati * item.Adedi
+                                ToplamAdet = item.Adet,
+                                ToplamSatis = item.UrunStok.Fiyati * item.Adet
                             });
                             db.SaveChanges();
 
@@ -192,23 +173,27 @@ namespace DAL.Repo
                                 Ay = ay,
                                 Gun = gun,
                                 Yil = yil,
-                                ToplamAdet = item.Adedi,
-                                ToplamSatis = item.UrunStok.Fiyati * item.Adedi
+                                ToplamAdet = item.Adet,
+                                ToplamSatis = item.UrunStok.Fiyati * item.Adet
                             });
                             db.SaveChanges();
                         }
                         try
                         {
-                            var al = db.EnCokSatan.FirstOrDefault(p => p.UrunID == item.UrunID);
-                            al.Adet += item.Adedi;
+                            var al = db.EnCokSatan.FirstOrDefault(p => p.MalzemeKodu == item.MalzemeKodu);
+                            al.Adet += item.Adet;
                             db.SaveChanges();
                         }
                         catch
                         {
                             db.EnCokSatan.Add(new EnCokSatan
                             {
-                                UrunID = item.UrunID,
-                                Adet = item.Adedi
+                                MalzemeKodu = item.MalzemeKodu,
+                                Marka=item.Marka,
+                                Model=item.Model,
+                                SinifKodu=item.SinifKodu,
+                                SinifTanimi=item.SinifTanimi,
+                                Adet = item.Adet
                             });
                             db.SaveChanges();
                         }
@@ -231,8 +216,8 @@ namespace DAL.Repo
                     SepetID = p.SepetID,
                     SiparisID = p.SiparisID,
                     SiparisTarihi = p.SiparisTarihi,
-                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adedi),
-                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adedi),
+                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adet),
+                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adet),
                     Musteri = db.Musteri.FirstOrDefault(w => w.MusteriID == p.Sepet.MusteriID),
                     Not = p.Not
                 }).ToList();
@@ -247,8 +232,8 @@ namespace DAL.Repo
                     SepetID = p.SepetID,
                     SiparisID = p.SiparisID,
                     SiparisTarihi = p.SiparisTarihi,
-                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adedi),
-                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adedi),
+                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adet),
+                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adet),
                     Musteri = db.Musteri.FirstOrDefault(w => w.MusteriID == p.Sepet.MusteriID),
                     Not = p.Not
                 }).ToList();
@@ -263,8 +248,8 @@ namespace DAL.Repo
                     SepetID = p.SepetID,
                     SiparisID = p.SiparisID,
                     SiparisTarihi = p.SiparisTarihi,
-                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adedi),
-                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adedi),
+                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adet),
+                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adet),
                     Musteri = db.Musteri.FirstOrDefault(w => w.MusteriID == p.Sepet.MusteriID),
                     Not = p.Not
                 }).ToList();
@@ -280,8 +265,8 @@ namespace DAL.Repo
                     SepetID = p.SepetID,
                     SiparisID = p.SiparisID,
                     SiparisTarihi = p.SiparisTarihi,
-                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adedi),
-                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adedi),
+                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adet),
+                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adet),
                     Musteri = db.Musteri.FirstOrDefault(w => w.MusteriID == p.Sepet.MusteriID),
                     Not = p.Not
                 }).ToList();
@@ -296,8 +281,8 @@ namespace DAL.Repo
                     SepetID = p.SepetID,
                     SiparisID = p.SiparisID,
                     SiparisTarihi = p.SiparisTarihi,
-                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adedi),
-                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adedi),
+                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adet),
+                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adet),
                     Musteri = db.Musteri.FirstOrDefault(w => w.MusteriID == p.Sepet.MusteriID),
                     Not = p.Not
                 }).ToList();
@@ -316,8 +301,8 @@ namespace DAL.Repo
                     GonderimTarihi = p.GonderimTarihi,
                     SiparisID = p.SiparisID,
                     SiparisTarihi = p.SiparisTarihi,
-                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adedi),
-                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adedi),
+                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adet),
+                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adet),
                     Musteri = db.Musteri.FirstOrDefault(w => w.MusteriID == p.Sepet.MusteriID),
                     Not = p.Not
                 }).ToList();
@@ -338,8 +323,8 @@ namespace DAL.Repo
                     SiparisID = p.SiparisID,
                     Gonderildimi = p.Gonderildimi,
                     SiparisTarihi = p.SiparisTarihi,
-                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adedi),
-                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adedi),
+                    ToplamAdet = p.Sepet.UrunSepet.Sum(n => n.Adet),
+                    ToplamFiyat = p.Sepet.UrunSepet.Sum(n => n.UrunStok.Fiyati * n.Adet),
                     Musteri = db.Musteri.FirstOrDefault(w => w.MusteriID == p.Sepet.MusteriID),
                     Not = p.Not
                 }).ToList();
@@ -355,28 +340,13 @@ namespace DAL.Repo
                 {
                     liste.Add(new VMSiparisUrun
                     {
-                        Marka = item.Urun.Marka,
-                        Model = item.Urun.Model,
-                        SinifKodu = item.Urun.SinifKodu,
-                        SinifTanimi = item.Urun.SinifTanimi,
-                        MalzemeKodu = item.Urun.MalzemeKodu,
-                        Section1 = item.Urun.Section1,
-                        Section2 = item.Urun.Section2,
-                        Section3 = item.Urun.Section3,
-                        Section4 = item.Urun.Section4,
-                        Section5 = item.Urun.Section5,
-                        Section6 = item.Urun.Section6,
-                        Section7 = item.Urun.Section7,
-                        Section8 = item.Urun.Section8,
-                        Section9 = item.Urun.Section9,
-                        Section10 = item.Urun.Section10,
-                        Section11 = item.Urun.Section11,
-                        Section12 = item.Urun.Section12,
-                        Section13 = item.Urun.Section13,
-                        Section14 = item.Urun.Section14,
-                        Section15 = item.Urun.Section15,
-                        Adedi = item.Adedi,
-                        Fiyat = item.UrunStok.Fiyati * item.Adedi
+                        Marka = item.Marka,
+                        Model = item.Model,
+                        SinifKodu = item.SinifKodu,
+                        SinifTanimi = item.SinifTanimi,
+                        MalzemeKodu = item.MalzemeKodu,
+                        Adedi = item.Adet,
+                        Fiyat = item.UrunStok.Fiyati * item.Adet
                     });
                 }
                 return liste;
@@ -392,28 +362,13 @@ namespace DAL.Repo
                 {
                     liste.Add(new VMSiparisUrun
                     {
-                        Marka = item.Urun.Marka,
-                        Model = item.Urun.Model,
-                        SinifKodu = item.Urun.SinifKodu,
-                        SinifTanimi = item.Urun.SinifTanimi,
-                        MalzemeKodu = item.Urun.MalzemeKodu,
-                        Section1 = item.Urun.Section1,
-                        Section2 = item.Urun.Section2,
-                        Section3 = item.Urun.Section3,
-                        Section4 = item.Urun.Section4,
-                        Section5 = item.Urun.Section5,
-                        Section6 = item.Urun.Section6,
-                        Section7 = item.Urun.Section7,
-                        Section8 = item.Urun.Section8,
-                        Section9 = item.Urun.Section9,
-                        Section10 = item.Urun.Section10,
-                        Section11 = item.Urun.Section11,
-                        Section12 = item.Urun.Section12,
-                        Section13 = item.Urun.Section13,
-                        Section14 = item.Urun.Section14,
-                        Section15 = item.Urun.Section15,
-                        Adedi = item.Adedi,
-                        Fiyat = item.UrunStok.Fiyati * item.Adedi
+                        Marka = item.Marka,
+                        Model = item.Model,
+                        SinifKodu = item.SinifKodu,
+                        SinifTanimi = item.SinifTanimi,
+                        MalzemeKodu = item.MalzemeKodu,
+                        Adedi = item.Adet,
+                        Fiyat = item.UrunStok.Fiyati * item.Adet
                     });
                 }
                 return liste;

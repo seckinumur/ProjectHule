@@ -25,7 +25,6 @@ namespace DAL.Repo
                     db.SaveChanges();
 
                     var UrunData = Data;
-                    //var Se1 = UrunData.Select(n=> n.Section1).Distinct().Select(p=> new Section1 { section1=p});
 
                     var silmarka = db.Markalar.ToList();
                     db.Markalar.RemoveRange(silmarka);
@@ -267,8 +266,24 @@ namespace DAL.Repo
                     Model = e.Model,
                     SinifKodu = e.SinifKodu,
                     SinifTanimi = e.SinifTanimi,
-                    Fiyat = db.UrunStok.FirstOrDefault(p => p.UrunID == e.UrunID) == null ? 0 : db.UrunStok.FirstOrDefault(p => p.UrunID == e.UrunID).Fiyati,
-                    Stok = db.UrunStok.FirstOrDefault(p => p.UrunID == e.UrunID) == null ? 0 : db.UrunStok.FirstOrDefault(p => p.UrunID == e.UrunID).Adedi
+                    Fiyat = db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == e.MalzemeKodu) == null ? 0 : db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == e.MalzemeKodu).Fiyati,
+                    Stok = db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == e.MalzemeKodu) == null ? 0 : db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == e.MalzemeKodu).Adedi
+                }).ToList();
+            }
+        }
+        public static List<VMUrunBulPost> UrunBulDetay(VMUrunBulPost Data)
+        {
+            using (PHDB db = new PHDB())
+            {
+                return db.Urun.Where(p => (p.Marka==Data.Marka && p.Model== Data.Model && p.SinifKodu == Data.SinifKodu && p.SinifTanimi == Data.SinifTanimi) && ( p.Section1==Data.Section1 || p.Section10==Data.Section10 || p.Section11==Data.Section11 || p.Section12==Data.Section12 || p.Section13==Data.Section13 || p.Section14==Data.Section14 || p.Section15== Data.Section15 || p.Section2== Data.Section2 || p.Section3== Data.Section3 || p.Section4== Data.Section4 || p.Section5==Data.Section5 || p.Section6==Data.Section6 || p.Section7==Data.Section7 || p.Section8== Data.Section8 || p.Section9== Data.Section9)).Select(e => new VMUrunBulPost
+                {
+                    MalzemeKodu = e.MalzemeKodu,
+                    Marka = e.Marka,
+                    Model = e.Model,
+                    SinifKodu = e.SinifKodu,
+                    SinifTanimi = e.SinifTanimi,
+                    Fiyat = db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == e.MalzemeKodu) == null ? 0 : db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == e.MalzemeKodu).Fiyati,
+                    Stok = db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == e.MalzemeKodu) == null ? 0 : db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == e.MalzemeKodu).Adedi
                 }).ToList();
             }
         }
@@ -278,10 +293,9 @@ namespace DAL.Repo
             {
                 try
                 {
-                    int urunbul = db.Urun.FirstOrDefault(p => p.MalzemeKodu == data.MalzemeKodu).UrunID;
                     try
                     {
-                        var bul = db.UrunStok.FirstOrDefault(p => p.UrunID == urunbul);
+                        var bul = db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == data.MalzemeKodu);
                         bul.Adedi = data.Stok;
                         bul.Fiyati = data.Fiyati;
                         db.SaveChanges();
@@ -291,13 +305,42 @@ namespace DAL.Repo
                     {
                         db.UrunStok.Add(new UrunStok
                         {
-                            UrunID = urunbul,
                             Fiyati = data.Fiyati,
-                            Adedi = data.Stok
+                            Adedi = data.Stok,
+                            MalzemeKodu=data.MalzemeKodu
                         });
                         db.SaveChanges();
                         return true;
                     }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+        public static bool StokEkleExcel(List<VMStokEkle> data)
+        {
+            using (PHDB db = new PHDB())
+            {
+                try
+                {
+                    foreach (var item in data)
+                    {
+                        try
+                        {
+                            var bul = db.UrunStok.FirstOrDefault(p => p.MalzemeKodu == item.MalzemeKodu);
+                            bul.Adedi = item.Stok;
+                            bul.Fiyati = item.Fiyati;
+                            db.SaveChanges();
+                        }
+                        catch
+                        {
+                            db.UrunStok.Add(new UrunStok { Adedi = item.Stok, Fiyati = item.Fiyati, MalzemeKodu = item.MalzemeKodu });
+                            db.SaveChanges();
+                        }
+                    }
+                    return true;
                 }
                 catch
                 {

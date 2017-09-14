@@ -78,33 +78,7 @@ namespace Entity.Context
             db.Kullanicilar.Add(new Kullanicilar { Admin = false, KullaniciAdi = "Demo", KullaniciSifre = "9916" });
             db.SaveChanges();
 
-            db.UrunStok.Add(new UrunStok { Adedi = 10, Fiyati = 800, UrunID = 1 });
-            db.SaveChanges();
-
-            //db.Markalar.Add(new Markalar { Marka = "Bellona" });
-            //db.Modeller.Add(new Modeller { Model = "ALESTA" });
-            //db.SinifKodlari.Add(new SinifKodlari { SinifKodu = "20ABK3E" });
-            //db.SinifTanimlari.Add(new SinifTanimlari { SinifTanimi = "B2 ALESTA BYZ KUMAS 3LU KANEPE" });
-            //string[] a = {"deneme","deneme","bug","bug"};
-
-            //db.Section.Add(new Section
-            //{
-            //    Section1 = a.ToList(),
-            //    Section2 = a.ToList(),
-            //    Section3 = a.ToList(),
-            //    Section4 = a.ToList(),
-            //    Section5 = a.ToList(),
-            //    Section6 = a.ToList(),
-            //    Section7 = a.ToList(),
-            //    Section8 = a.ToList(),
-            //    Section9 = a.ToList(),
-            //    Section10 =a.ToList(),
-            //    Section11 =a.ToList(),
-            //    Section12 =a.ToList(),
-            //    Section13 =a.ToList(),
-            //    Section14 =a.ToList(),
-            //    Section15 = a.ToList()
-            //});
+            //db.UrunStok.Add(new UrunStok { Adedi = 10, Fiyati = 800, MalzemeKodu= "20ABK3E00500003" });
             //db.SaveChanges();
         }
     }
