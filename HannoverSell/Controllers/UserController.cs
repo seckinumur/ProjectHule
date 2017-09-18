@@ -34,9 +34,41 @@ namespace HannoverSell.Controllers
                 VMRAM.RamData = UrunRepo.SinifKoduGet();
                 VMRAM.RamData2 = UrunRepo.SinifTanimiGet();
                 VMRAM.SecData = UrunRepo.SectionGet();
+                VMRAM.RamData3 = MusterilerRepo.TumUyelerAjax();
                 ViewBag.Class = "text-warning";
                 ViewBag.Text = "Otomatik Stok ve Fiyat Yükleme Sistemi V.0.4 (Beta)";
                 return View(Gonder);
+            }
+            else
+            {
+                TempData["UyariTipi"] = "text-danger";
+                TempData["Sonuc"] = "Tarayıcıda Oturum Süreniz Dolmuş! Lütfen Tekrar Oturum Açın!";
+                return RedirectToAction("Logon", "Login");
+            }
+        }
+        [HttpPost]
+        public ActionResult Satis(VMSanalSiparis Data)
+        {
+            if (Session["User"] != null)
+            {
+                int id = int.Parse(Session["User"].ToString());
+                SepetRepo.SepetiKaydetKullanici(id, Data);
+                return RedirectToAction("Satis");
+            }
+            else
+            {
+                TempData["UyariTipi"] = "text-danger";
+                TempData["Sonuc"] = "Tarayıcıda Oturum Süreniz Dolmuş! Lütfen Tekrar Oturum Açın!";
+                return RedirectToAction("Logon", "Login");
+            }
+        }
+        public ActionResult SiparisIptal()
+        {
+            if (Session["User"] != null)
+            {
+                int id = int.Parse(Session["User"].ToString());
+                SepetRepo.SepetiSilKullanici(id);
+                return RedirectToAction("Satis");
             }
             else
             {
@@ -115,6 +147,21 @@ namespace HannoverSell.Controllers
         {
             int Kullanici = int.Parse(Session["User"].ToString());
             var gonder = SepetRepo.SanalSepeteListe(Kullanici);
+            return Json(gonder, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public ActionResult ToplamAjax() //Ajax 
+        {
+            int Kullanici = int.Parse(Session["User"].ToString());
+            var tf = UrunRepo.SanalsepetToplamFiyat(Kullanici);
+            var tu = UrunRepo.SanalsepetToplamUrun(Kullanici);
+            VMSiparisToplam gonder = new VMSiparisToplam() { ToplamAdet = tu, ToplamFiyat = tf };
+            return Json(gonder, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public ActionResult MusteriBul(string name) //Ajax 
+        {
+            var gonder = MusterilerRepo.MusteriAjax(name);
             return Json(gonder, JsonRequestBehavior.AllowGet);
         }
     }

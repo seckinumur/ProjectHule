@@ -464,6 +464,18 @@ namespace HannoverSell.Controllers
             Session.Abandon();
             return RedirectToAction("Logon", "Login");
         }
+        [HttpGet]
+        public ActionResult MusteriBulAjax(string q) //Ajax
+        {
+            if (q.Length >= 4)
+            {
+                return Json(VMRAM.RamData3.Where(p => p.Contains(q.ToUpper().Trim())).ToList(), JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(null, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 
 }

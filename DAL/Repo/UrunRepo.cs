@@ -348,5 +348,40 @@ namespace DAL.Repo
                 }
             }
         }
+        public static string SanalsepetToplamUrun(int ID)
+        {
+            using (PHDB db = new PHDB())
+            {
+                try
+                {
+                    int adet = db.SanalSepet.Where(p => p.KullanicilarID == ID).Sum(P => P.Adet);
+                    return "Sepette " + adet + " Adet Ürün Bekliyor.";
+                }
+                catch
+                {
+                    return "Ürün Yok";
+                }
+            }
+        }
+        public static double SanalsepetToplamFiyat(int ID)
+        {
+            using (PHDB db = new PHDB())
+            {
+                try
+                {
+                    var liste = db.SanalSepet.Where(p => p.KullanicilarID == ID).ToList();
+                    double sonuc =0;
+                    foreach (var item in liste)
+                    {
+                        sonuc += item.Fiyat * item.Adet;
+                    }
+                    return sonuc;
+                }
+                catch
+                {
+                    return 0.00;
+                }
+            }
+        }
     }
 }

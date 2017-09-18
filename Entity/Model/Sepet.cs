@@ -14,6 +14,9 @@ namespace Entity.Model
         public bool SiparisTamamlandimi { get; set; }
         public bool Aktifmi { get; set; }
         public bool Manuel { get; set; }
+        public int ToplamAdet { get; set; }
+        public double ToplamFiyat { get; set; }
+        public double IndirimliFiyat { get; set; }
 
         public virtual List<UrunSepet> UrunSepet { get; set; }
         public virtual Musteri Musteri { get; set; }

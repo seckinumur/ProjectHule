@@ -110,7 +110,7 @@ namespace DAL.Repo
                 }
             }
         }
-        public static bool SepetiKaydetKullanici(int KullaniciID, int Uye) //Kullanıcı Modunda Manuel Sepeti Ekle
+        public static bool SepetiKaydetKullanici(int KullaniciID, VMSanalSiparis data) //Kullanıcı Modunda Manuel Sepeti Ekle
         {
             using (PHDB db = new PHDB())
             {
@@ -132,6 +132,26 @@ namespace DAL.Repo
                             UrunStokID = db.UrunStok.FirstOrDefault(e => e.MalzemeKodu == p.MalzemeKodu).UrunStokID
                         }).ToList();
 
+                        int Uye;
+                        try
+                        {
+                            Uye = db.Musteri.FirstOrDefault(p => p.AdiSoyadi == data.AdiSoyadi.Trim().ToUpper()).MusteriID;
+                        }
+                        catch
+                        {
+                            db.Musteri.Add(new Musteri
+                            {
+                                AdiSoyadi = data.AdiSoyadi.Trim().ToUpper(),
+                                Adres = data.Adres.Trim().ToUpper(),
+                                MailAdresi = data.MailAdresi,
+                                not = data.not.Trim().ToUpper(),
+                                Tarih = DateTime.Now.ToShortDateString(),
+                                Telefon = data.Telefon.Trim().ToUpper()
+                            });
+                            db.SaveChanges();
+
+                            Uye = db.Musteri.FirstOrDefault(p => p.AdiSoyadi == data.AdiSoyadi.Trim().ToUpper()).MusteriID;
+                        }
                         db.Sepet.Add(new Sepet()
                         {
                             SiparisTamamlandimi = true,
@@ -139,7 +159,10 @@ namespace DAL.Repo
                             KullanicilarID = KullaniciID,
                             UrunSepet = liste,
                             Manuel = true,
-                            Aktifmi = true
+                            Aktifmi = true,
+                            ToplamAdet= db.SanalSepet.Where(p => p.KullanicilarID == KullaniciID).Sum(P => P.Adet),
+                            ToplamFiyat=data.ToplamFiyat,
+                            IndirimliFiyat=data.IndirimliFiyat
                         });
                         db.SaveChanges();
 

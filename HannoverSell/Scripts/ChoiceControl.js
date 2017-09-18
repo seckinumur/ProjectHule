@@ -138,4 +138,11 @@
         }
     });
 
+    $('#MBA').selectpickerAjax({
+        ajax: '/Admin/MusteriBulAjax/',
+        ajaxPreProcess: function (res, cb) {
+            console.log('process the response');
+            return res;
+        }
+    });
 });

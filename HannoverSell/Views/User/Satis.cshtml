@@ -169,6 +169,7 @@
             </div>
 
             <br />
+
             <div class="col-sm-12">
                 <ul class="nav nav-pills style2 nav-justified">
                     <li class="active">
@@ -179,7 +180,7 @@
                             </div>
                         </a>
                     </li>
-                    <li onclick="Goster('d')">
+                    <li >
                         <a href="#billing-info" data-toggle="tab">
                             2. Siparişi Onayla
                             <div class="icon">
@@ -221,6 +222,7 @@
                                     </tbody>
                                 </table>
                                 <br />
+                               
                             </div>
                         </div>
                     </div>
@@ -235,17 +237,18 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="row">
-                                                <div class="form-group col-sm-6">
+                                                <div class="form-group col-sm-4">
                                                     <label class="text-primary">Müşteri Bul</label>
-                                                    <select class="selectpicker form-control" data-live-search="true" name="Il" id="Il">
-                                                        <option data-tokens="Düzce">Düzce</option>
-                                                    </select>
+                                                    <select class="selectpicker form-control" id="MBA" title="Müşteri Ara"></select>
                                                 </div>
-
+                                                <div class="form-group col-sm-2">
+                                                    <label class="text-primary">Ara</label>
+                                                    <a href="#" class="btn btn-primary form-control" onclick="MusteriBul()">Ara</a>
+                                                </div>
                                                 <div class="col-sm-6">
                                                     <div class="form-group">
                                                         <label class="text-primary">Müşteri Adı Soyadı</label>
-                                                        <input id="name" type="text" placeholder="Adı Soyadı" name="UyeAdiSoyadi" class="form-control input-md" required>
+                                                        <input id="name" type="text" placeholder="Adı Soyadı" name="AdiSoyadi" class="form-control input-md" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
@@ -263,14 +266,12 @@
 
                                                 <div class="form-group col-sm-12">
                                                     <label class="text-primary">Müşteri Adresi</label>
-                                                    <input id="billingAddress" type="text" placeholder="Adres" name="Adres" class="form-control input-md" required>
+                                                    <input id="address" type="text" placeholder="Adres" name="Adres" class="form-control input-md" required>
                                                 </div>
-                                                <input name="UyelerID" hidden="hidden">
-                                                <input name="Gorev" value="Guncelle" hidden="hidden">
                                                 <div class="form-group col-sm-12">
-                                                    <label class="text-primary">Not</label>
+                                                    <label class="text-primary">Sipariş Notu</label>
                                                     <div class="form-group">
-                                                        <textarea rows="2" class="form-control" name="Notu" placeholder="Sipariş Notu">not</textarea>
+                                                        <textarea rows="2" class="form-control" name="not" id="notkismi" placeholder="Sipariş Notu">not</textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -289,11 +290,27 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <th>Toplam Ürün</th>
-                                                                    <td>Toplam Ütrün</td>
+                                                                    <td id="toplamurun">Ürün Yok</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th>Toplam Fiyat</th>
-                                                                    <td>Fiyat</td>
+                                                                    <td ><input id="toplamfiyat" name="ToplamFiyat" readonly="readonly" /> €</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>İndirimli Fiyatı</th>
+                                                                    <td><input id="IndirimliFiyatia" name="IndirimliFiyat" readonly="readonly" /> €</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>Yapılan İndirim</th>
+                                                                    <td id="YapilanIndirimO">0.00 €</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>% Toplam İndirim Oranı</th>
+                                                                    <td><input type="number" min="0" max="100" value="0" maxlength="3" size="3" id="IndirimUygulaFiyat"/> % <a class="btn btn-info" onclick="IndirimUygula()">İndirimi Uygula</a></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>€ Toplam İndirim Oranı</th>
+                                                                    <td><input value="0" size="3" id="IndirimUygulaFiyate" /> € <a class="btn btn-warning" onclick="IndirimUygulae()">İndirimi Uygula</a></td>
                                                                 </tr>
                                                             </table>
                                                         </div>
@@ -301,10 +318,11 @@
                                                 </div>
                                                 <input name="UyelerID" value="" hidden="hidden">
                                                 <input name="Gorev" value="Gonder" hidden="hidden">
-                                                <div class="form-group">
-                                                    <div class="col-sm-12 text-center">
-                                                        <button class="btn btn-default btn-md round" type="submit">Siparişi Şimdi Tamamla</button>
-                                                    </div>
+                                                <div class="form-group col-sm-6">
+                                                        <a href="~/User/SiparisIptal" class="btn btn-danger btn-block" type="submit">Siparişi İptal Et</a>
+                                                </div>
+                                                <div class="form-group col-sm-6">
+                                                    <button class="btn btn-success btn-block" type="submit">Siparişi Şimdi Tamamla</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -443,7 +461,47 @@
 <script type="text/javascript">
     $(document).ready(function () {
         GenelIslem();
+        ToplamiAl();
     });
+
+    function ToplamiAl() {
+
+        $.ajax({
+            type: 'GET',
+            url: '/User/ToplamAjax',
+            contentType: 'application/json',
+            success: function (data) {
+                document.getElementById("toplamurun").innerHTML = data.ToplamAdet;
+                document.getElementById("toplamfiyat").value = data.ToplamFiyat;
+            }
+        });
+    };
+
+    function IndirimUygula() {
+        var toplamff = document.getElementById("toplamfiyat").value;
+        var Indirimm = document.getElementById("IndirimUygulaFiyat").value;
+        if (Indirimm != 0) {
+            document.getElementById("IndirimliFiyatia").value = toplamff - (toplamff * Indirimm / 100);
+            document.getElementById("YapilanIndirimO").innerHTML = toplamff * Indirimm / 100 + " €";
+        }
+        else {
+            document.getElementById("IndirimliFiyatia").value = 0.00;
+            document.getElementById("YapilanIndirimO").innerHTML = "0.00 €";
+        }
+    };
+
+    function IndirimUygulae() {
+        var toplamff = document.getElementById("toplamfiyat").value;
+        var Indirimm = document.getElementById("IndirimUygulaFiyate").value;
+        if (Indirimm != 0) {
+            document.getElementById("IndirimliFiyatia").value = toplamff -  Indirimm;
+            document.getElementById("YapilanIndirimO").innerHTML =  Indirimm  + " €";
+        }
+        else {
+            document.getElementById("IndirimliFiyatia").value = 0.00;
+            document.getElementById("YapilanIndirimO").innerHTML = "0.00 €";
+        }
+    };
 
     function GenelIslem() {
         $.ajax({
@@ -469,6 +527,8 @@
                     responsive: true,
                     destroy: true
                 });
+                document.getElementById("toplamurun").innerHTML = data.ToplamAdet;
+                document.getElementById("toplamfiyat").innerHTML = data.ToplamFiyat;
                 Tablo.on('select', function (e, dt, type, indexes) {
                     var rowData1 = Tablo.rows({ selected: true }).data();
                     document.getElementById("marka2").value = rowData1[0].Marka;
@@ -593,6 +653,7 @@
             success: function (response) {
                 $('#Bak').modal('toggle');
                 GenelIslem();
+                ToplamiAl();
                 if (response != null && response.success) {
                     $.notify({
                         icon: 'fa fa-check-circle',
@@ -650,6 +711,7 @@
             success: function (response) {
                 $('#BakS').modal('toggle');
                 GenelIslem();
+                ToplamiAl();
                 if (response != null && response.success) {
                     $.notify({
                         icon: 'fa fa-check-circle',
@@ -707,6 +769,7 @@
             success: function (response) {
                 $('#BakS').modal('toggle');
                 GenelIslem();
+                ToplamiAl();
                 if (response != null && response.success) {
                     $.notify({
                         icon: 'fa fa-check-circle',
@@ -747,5 +810,27 @@
                     });
             }
         });
-    }
+    };
+
+    function MusteriBul() {
+        var Veri = JSON.stringify({
+            'name': $('#MBA').selectpicker().find("option:selected").text()
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: '/User/MusteriBul/',
+            data: Veri,
+            contentType: 'application/json',
+            success: function (data) {
+                document.getElementById("name").value = data.AdiSoyadi;
+                document.getElementById("phone").value = data.Telefon;
+                document.getElementById("address").value = data.Adres;
+                document.getElementById("email").value = data.MailAdresi;
+                document.getElementById("notkismi").innerHTML = data.Not;
+            },
+            error: function (response) {
+            }
+        });
+    };
 </script>

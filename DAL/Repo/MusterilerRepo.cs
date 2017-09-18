@@ -15,7 +15,7 @@ namespace DAL.Repo
         {
             using (PHDB db = new PHDB())
             {
-                bool Control = db.Musteri.Any(p => p.MailAdresi == Al.MailAdresi && p.Sifre == Al.Sifre);
+                bool Control = db.Musteri.Any(p => p.MailAdresi == Al.MailAdresi && p.AdiSoyadi==Al.AdiSoyadi);
                 if (Control != true)
                 {
                     db.Musteri.Add(new Musteri
@@ -23,10 +23,8 @@ namespace DAL.Repo
                         Adres = Al.Adres.Trim(),
                         MailAdresi = Al.MailAdresi.Trim(),
                         AdiSoyadi = Al.AdiSoyadi.Trim(),
-                        Sifre = Al.Sifre.Trim(),
                         Tarih = DateTime.Now.ToShortDateString(),
-                        Telefon = Al.Telefon.Trim(),
-                        Il = Al.Il
+                        Telefon = Al.Telefon.Trim()
                     });
                     db.SaveChanges();
                     return true;
@@ -49,9 +47,7 @@ namespace DAL.Repo
                     Bul.Adres = Al.Adres.Trim();
                     Bul.MailAdresi = Al.MailAdresi.Trim();
                     Bul.AdiSoyadi = Al.AdiSoyadi.Trim();
-                    Bul.Sifre = Al.Sifre.Trim();
                     Bul.Telefon = Al.Telefon.Trim();
-                    Bul.Il = Al.Il;
                     db.SaveChanges();
                     return true;
                 }
@@ -90,20 +86,23 @@ namespace DAL.Repo
                     Adres = p.Adres,
                     MailAdresi = p.MailAdresi,
                     AdiSoyadi = p.AdiSoyadi,
-                    Sifre = p.Sifre,
-                    Tarih = p.Tarih,
                     Telefon = p.Telefon,
                     MusteriID = p.MusteriID,
-                    Il = p.Il
                 }).FirstOrDefault();
             }
         }
-        public static string UyeIsmi(string ID)
+        public static VMMusteri MusteriAjax(string Name)
         {
             using (PHDB db = new PHDB())
             {
-                int id = int.Parse(ID);
-                return db.Musteri.FirstOrDefault(p => p.MusteriID == id).AdiSoyadi;
+                return db.Musteri.Where(p => p.AdiSoyadi == Name).Select(t => new VMMusteri
+                {
+                    AdiSoyadi = t.AdiSoyadi,
+                    Adres = t.Adres,
+                    MailAdresi = t.MailAdresi,
+                    Telefon = t.Telefon,
+                    Not=t.not
+                }).FirstOrDefault();
             }
         }
         public static List<VMMusteri> TumUyeler()
@@ -115,12 +114,16 @@ namespace DAL.Repo
                     Adres = p.Adres,
                     MailAdresi = p.MailAdresi,
                     AdiSoyadi = p.AdiSoyadi,
-                    Sifre = p.Sifre,
-                    Tarih = p.Tarih,
                     Telefon = p.Telefon,
-                    MusteriID = p.MusteriID,
-                    Il = p.Il
+                    MusteriID = p.MusteriID
                 }).ToList();
+            }
+        }
+        public static List<string> TumUyelerAjax()
+        {
+            using (PHDB db = new PHDB())
+            {
+                return db.Musteri.Select(p => p.AdiSoyadi).ToList();
             }
         }
     }

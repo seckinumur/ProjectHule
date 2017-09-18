@@ -63,10 +63,12 @@
     <Compile Include="VM\VMGunlukToplam.cs" />
     <Compile Include="VM\VMKullanici.cs" />
     <Compile Include="VM\VMRAM.cs" />
+    <Compile Include="VM\VMSanalSiparis.cs" />
     <Compile Include="VM\VMSection.cs" />
     <Compile Include="VM\VMSepet.cs" />
     <Compile Include="VM\VMSiparis.cs" />
     <Compile Include="VM\VMSiparisSepeti.cs" />
+    <Compile Include="VM\VMSiparisToplam.cs" />
     <Compile Include="VM\VMSiparisUrun.cs" />
     <Compile Include="VM\VMStok.cs" />
     <Compile Include="VM\VMStokEkle.cs" />

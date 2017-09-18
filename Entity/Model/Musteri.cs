@@ -11,10 +11,8 @@ namespace Entity.Model
         public int MusteriID { get; set; }
         public string AdiSoyadi { get; set; }
         public string Adres { get; set; }
-        public string Il { get; set; }
         public string Telefon { get; set; }
         public string MailAdresi { get; set; }
-        public string Sifre { get; set; }
         public string Tarih { get; set; }
         public string not { get; set; }
     }
